@@ -1,4 +1,12 @@
-import { Pool, type PoolClient, type QueryResultRow } from "pg";
+import { Pool, types, type PoolClient, type QueryResultRow } from "pg";
+
+const PG_DATE_OID = 1082;
+const PG_TIMESTAMP_OID = 1114;
+const PG_TIMESTAMPTZ_OID = 1184;
+
+types.setTypeParser(PG_DATE_OID, (value) => value);
+types.setTypeParser(PG_TIMESTAMP_OID, (value) => value);
+types.setTypeParser(PG_TIMESTAMPTZ_OID, (value) => value);
 
 declare global {
   // eslint-disable-next-line no-var
