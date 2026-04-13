@@ -1,0 +1,254 @@
+{
+  "availability": [
+    {
+      "id": "f696043d-0a74-4c10-9e1a-cbf5b9fc7fa8",
+      "date": "2026-03-27",
+      "startZeit": "20:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T16:25:52.845Z"
+    },
+    {
+      "id": "a4cf417c-f601-4b54-a488-6c26fff0194f",
+      "date": "2026-03-27",
+      "startZeit": "21:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T16:25:52.845Z"
+    },
+    {
+      "id": "730ac0a6-5a39-4693-b7d9-a93fd0cfeb9c",
+      "date": "2026-03-27",
+      "startZeit": "21:15",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T16:25:52.845Z"
+    },
+    {
+      "id": "54b4fe39-2a79-40fe-bdbd-d167d1a37b0d",
+      "date": "2026-03-27",
+      "startZeit": "21:30",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T16:25:52.845Z"
+    },
+    {
+      "id": "eceadf85-9c59-4d7b-8692-512b277208ad",
+      "date": "2026-03-27",
+      "startZeit": "21:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T16:25:52.845Z"
+    },
+    {
+      "id": "8136ab1a-f8e3-486b-a717-76ca8a41a0f7",
+      "date": "2026-03-30",
+      "startZeit": "11:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:07.889Z"
+    },
+    {
+      "id": "1533eeb0-ebc4-45ab-adf7-cb95a2a3337f",
+      "date": "2026-03-30",
+      "startZeit": "11:15",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:07.889Z"
+    },
+    {
+      "id": "92505d23-3387-4f0d-9554-6f8e0aa884ae",
+      "date": "2026-03-30",
+      "startZeit": "11:30",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:07.889Z"
+    },
+    {
+      "id": "e272016a-761c-4c46-9843-6825258cb814",
+      "date": "2026-03-30",
+      "startZeit": "11:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:07.889Z"
+    },
+    {
+      "id": "8f1a2126-4834-4b39-a67b-eea61a16db39",
+      "date": "2026-03-30",
+      "startZeit": "12:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:07.889Z"
+    },
+    {
+      "id": "0ea74bf6-69a8-47dc-905e-a822deaef614",
+      "date": "2026-03-31",
+      "startZeit": "11:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:15.823Z"
+    },
+    {
+      "id": "0682a255-d237-466f-b5e0-95c79426ff64",
+      "date": "2026-03-31",
+      "startZeit": "11:15",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:15.823Z"
+    },
+    {
+      "id": "f92b64ac-b316-4244-8f6c-929710c9de5d",
+      "date": "2026-03-31",
+      "startZeit": "11:30",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:15.823Z"
+    },
+    {
+      "id": "04f62748-f4fc-47b5-96df-3afe240e43fb",
+      "date": "2026-03-31",
+      "startZeit": "11:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:15.823Z"
+    },
+    {
+      "id": "7f561d43-d9a6-4b7c-989d-dd902493d9cd",
+      "date": "2026-03-31",
+      "startZeit": "12:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-27T17:00:15.823Z"
+    },
+    {
+      "id": "4ce5ee8b-ab0b-4581-9cc7-7c32d193ca49",
+      "date": "2026-03-30",
+      "startZeit": "09:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "2285ffc5-0b68-4764-b22b-6e107306c165",
+      "date": "2026-03-30",
+      "startZeit": "09:15",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "e084ab99-dfd7-4ec9-9b62-18821ece68c0",
+      "date": "2026-03-30",
+      "startZeit": "09:30",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "defaf94a-5179-42fd-9eee-99f29dc85829",
+      "date": "2026-03-30",
+      "startZeit": "09:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "ea11e353-3970-46cd-9f84-6829a428e6d8",
+      "date": "2026-03-30",
+      "startZeit": "10:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "7dcc2291-5dca-46d8-9afb-b873a6edaa62",
+      "date": "2026-03-30",
+      "startZeit": "10:15",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "f8d76d21-a558-40d3-bb22-35478279e6ec",
+      "date": "2026-03-30",
+      "startZeit": "10:30",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "f39e593d-6577-4754-890a-b20cd75925e7",
+      "date": "2026-03-30",
+      "startZeit": "10:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:44.715Z"
+    },
+    {
+      "id": "378e2ea1-6b8c-4570-80bf-ca1a15ff0a1e",
+      "date": "2026-03-31",
+      "startZeit": "09:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    },
+    {
+      "id": "40b304b9-3efd-4796-acd1-34cc00fc9a5a",
+      "date": "2026-03-31",
+      "startZeit": "09:15",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    },
+    {
+      "id": "60e8f2f5-654e-4b0e-a99f-0a9d3b7506cb",
+      "date": "2026-03-31",
+      "startZeit": "09:30",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    },
+    {
+      "id": "53dcbe95-a8ca-448b-9963-c41d25f99bcb",
+      "date": "2026-03-31",
+      "startZeit": "09:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    },
+    {
+      "id": "934b36f9-9e44-45e1-be48-d58e66d825af",
+      "date": "2026-03-31",
+      "startZeit": "10:00",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    },
+    {
+      "id": "8c993eff-e315-418e-98eb-ff3254ce25f6",
+      "date": "2026-03-31",
+      "startZeit": "10:15",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    },
+    {
+      "id": "acf3f920-de79-4b30-b1d5-2aa717ade947",
+      "date": "2026-03-31",
+      "startZeit": "10:30",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    },
+    {
+      "id": "1ee01ea8-9703-4483-bb20-8fcfabd33dd9",
+      "date": "2026-03-31",
+      "startZeit": "10:45",
+      "status": "frei",
+      "note": "",
+      "createdAt": "2026-03-28T13:49:47.722Z"
+    }
+  ],
+  "bookings": [],
+  "voucherOrders": []
+}
