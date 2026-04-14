@@ -73,6 +73,7 @@ export default async function ServiceBookingPage({ params, searchParams }: Props
       {slots.length ? (
         <div id="formular" style={{ paddingTop: 28 }}>
           <BookingForm
+            key={resolvedSearchParams.slot || "default-slot"}
             serviceSlug={slug}
             serviceName={service.name}
             servicePrice={service.preisEuro}

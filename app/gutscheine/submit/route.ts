@@ -4,6 +4,15 @@ import { createVoucherOrder } from "@/lib/store";
 import { createVoucherPdf } from "@/lib/voucher-pdf";
 import { sendVoucherEmails } from "@/lib/email";
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
+  return await Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Der Mailversand hat zu lange gedauert.")), timeoutMs)
+    )
+  ]);
+}
+
 export async function POST(request: Request) {
   const formData = await request.formData();
 
@@ -25,7 +34,7 @@ export async function POST(request: Request) {
     revalidatePath("/gutscheine");
 
     try {
-      await sendVoucherEmails(voucher, pdfBytes);
+      await withTimeout(sendVoucherEmails(voucher, pdfBytes), 15000);
     } catch (error) {
       console.error("Gutschein-Mailversand fehlgeschlagen:", error);
       return NextResponse.redirect(new URL("/gutscheine/danke?mail=fehler", request.url), 303);

@@ -46,7 +46,10 @@ function createTransport() {
       user,
       pass
     },
-    requireTLS: port !== 465
+    requireTLS: port !== 465,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000
   });
 }
 
