@@ -6,9 +6,12 @@ type Props = {
   serviceName: string;
   servicePrice: number;
   slots: StoredSlot[];
+  selectedSlotId?: string;
 };
 
-export function BookingForm({ serviceSlug, serviceName, servicePrice, slots }: Props) {
+export function BookingForm({ serviceSlug, serviceName, servicePrice, slots, selectedSlotId }: Props) {
+  const initialSlotId = slots.some((slot) => slot.id === selectedSlotId) ? selectedSlotId : slots[0]?.id;
+
   return (
     <section className="card form-card">
       <div className="eyebrow">Kontaktdaten</div>
@@ -28,7 +31,7 @@ export function BookingForm({ serviceSlug, serviceName, servicePrice, slots }: P
         </div>
         <div className="field">
           <label htmlFor="slotId">Gewünschte Zeit</label>
-          <select id="slotId" name="slotId" defaultValue={slots[0]?.id}>
+          <select id="slotId" name="slotId" defaultValue={initialSlotId}>
             {slots.map((slot) => (
               <option key={slot.id} value={slot.id}>
                 {slot.datumLabel} · {slot.startZeit} bis {slot.endZeit} Uhr

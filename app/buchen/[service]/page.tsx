@@ -8,10 +8,14 @@ type Props = {
   params: Promise<{
     service: string;
   }>;
+  searchParams?: Promise<{
+    slot?: string;
+  }>;
 };
 
-export default async function ServiceBookingPage({ params }: Props) {
+export default async function ServiceBookingPage({ params, searchParams }: Props) {
   const { service: slug } = await params;
+  const resolvedSearchParams = (await searchParams) || {};
   const service = await getServiceBySlugSafe(slug);
 
   if (!service) {
@@ -42,7 +46,14 @@ export default async function ServiceBookingPage({ params }: Props) {
                 {slot.startZeit} bis {slot.endZeit} Uhr
               </p>
               <div className="inline-actions">
-                <Link className="button" href="#formular">
+                <Link
+                  className="button"
+                  href={{
+                    pathname: `/buchen/${slug}`,
+                    query: { slot: slot.id },
+                    hash: "formular"
+                  }}
+                >
                   Diese Zeit wählen
                 </Link>
               </div>
@@ -61,7 +72,13 @@ export default async function ServiceBookingPage({ params }: Props) {
 
       {slots.length ? (
         <div id="formular" style={{ paddingTop: 28 }}>
-          <BookingForm serviceSlug={slug} serviceName={service.name} servicePrice={service.preisEuro} slots={slots} />
+          <BookingForm
+            serviceSlug={slug}
+            serviceName={service.name}
+            servicePrice={service.preisEuro}
+            slots={slots}
+            selectedSlotId={resolvedSearchParams.slot}
+          />
         </div>
       ) : null}
     </main>

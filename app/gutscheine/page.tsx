@@ -1,6 +1,14 @@
 import { VoucherOrderForm } from "@/components/voucher-order-form";
 
-export default function GutscheinePage() {
+type Props = {
+  searchParams?: Promise<{
+    fehler?: string;
+  }>;
+};
+
+export default async function GutscheinePage({ searchParams }: Props) {
+  const params = (await searchParams) || {};
+
   return (
     <main className="section">
       <section className="section-banner">
@@ -29,6 +37,7 @@ export default function GutscheinePage() {
       </section>
 
       <section className="section">
+        {params.fehler ? <p className="status-hinweis status-hinweis-warnung">{params.fehler}</p> : null}
         <VoucherOrderForm />
       </section>
     </main>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import type { Service } from "@/lib/data";
-import { createVoucherAction } from "@/app/gutscheine/actions";
 
 type Props = {
   services: Service[];
@@ -19,7 +18,7 @@ export function VoucherOrderFormClient({ services }: Props) {
         Gutschein direkt anfordern
       </h2>
       <p className="section-copy">Wählen Sie bitte aus: Wertgutschein oder Behandlungsgutschein.</p>
-      <form action={createVoucherAction} className="form-grid">
+      <form action="/gutscheine/submit" className="form-grid" method="post">
         <div className="field">
           <label htmlFor="typ">Art des Gutscheins</label>
           <select
