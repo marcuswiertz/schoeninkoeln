@@ -1,3 +1,5 @@
+import net from "node:net";
+import tls from "node:tls";
 import nodemailer from "nodemailer";
 import type { StoredBooking, VoucherOrder } from "@/lib/store";
 
@@ -54,6 +56,117 @@ function createTransport() {
     greetingTimeout: MAIL_CONNECTION_TIMEOUT_MS,
     socketTimeout: MAIL_SOCKET_TIMEOUT_MS
   });
+}
+
+function formatError(error: unknown) {
+  if (error instanceof Error) {
+    const details = [error.message];
+    const code = (error as Error & { code?: string }).code;
+    const response = (error as Error & { response?: string }).response;
+
+    if (code) {
+      details.push(`Code: ${code}`);
+    }
+
+    if (response) {
+      details.push(`Antwort: ${response}`);
+    }
+
+    return details.join(" | ");
+  }
+
+  return "Unbekannter Fehler";
+}
+
+async function testTcpConnection(host: string, port: number) {
+  await new Promise<void>((resolve, reject) => {
+    const socket = net.connect({ host, port });
+
+    const cleanup = () => {
+      socket.removeAllListeners();
+      socket.destroy();
+    };
+
+    socket.setTimeout(MAIL_CONNECTION_TIMEOUT_MS);
+
+    socket.once("connect", () => {
+      cleanup();
+      resolve();
+    });
+
+    socket.once("timeout", () => {
+      cleanup();
+      reject(new Error(`Keine TCP-Verbindung zu ${host}:${port} innerhalb von ${MAIL_CONNECTION_TIMEOUT_MS} ms.`));
+    });
+
+    socket.once("error", (error) => {
+      cleanup();
+      reject(error);
+    });
+  });
+}
+
+async function testTlsHandshake(host: string, port: number) {
+  await new Promise<void>((resolve, reject) => {
+    const socket = tls.connect({
+      host,
+      port,
+      servername: host,
+      timeout: MAIL_CONNECTION_TIMEOUT_MS
+    });
+
+    const cleanup = () => {
+      socket.removeAllListeners();
+      socket.destroy();
+    };
+
+    socket.once("secureConnect", () => {
+      cleanup();
+      resolve();
+    });
+
+    socket.once("timeout", () => {
+      cleanup();
+      reject(new Error(`TLS-Handshake zu ${host}:${port} hat nicht rechtzeitig geantwortet.`));
+    });
+
+    socket.once("error", (error) => {
+      cleanup();
+      reject(error);
+    });
+  });
+}
+
+export async function diagnoseEmailConfiguration() {
+  const host = getRequiredEnv("SMTP_HOST");
+  const port = Number(process.env.SMTP_PORT || "587");
+
+  const steps: string[] = [];
+
+  try {
+    await testTcpConnection(host, port);
+    steps.push(`TCP-Verbindung zu ${host}:${port} erfolgreich.`);
+  } catch (error) {
+    throw new Error(`Die Server-Verbindung scheitert bereits vor SMTP. ${formatError(error)}`);
+  }
+
+  if (port === 465) {
+    try {
+      await testTlsHandshake(host, port);
+      steps.push("TLS-Handshake erfolgreich.");
+    } catch (error) {
+      throw new Error(`Die Verbindung zum Mailserver steht, aber TLS scheitert. ${formatError(error)}`);
+    }
+  }
+
+  try {
+    await createTransport().verify();
+    steps.push("SMTP-Anmeldung erfolgreich.");
+  } catch (error) {
+    throw new Error(`Die Server-Verbindung steht, aber SMTP/Anmeldung scheitert. ${formatError(error)}`);
+  }
+
+  return steps.join(" ");
 }
 
 function escapeHtml(value: string) {

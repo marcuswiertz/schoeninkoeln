@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ADMIN_COOKIE, getAdminPassword } from "@/lib/auth";
-import { verifyEmailConfiguration } from "@/lib/email";
+import { diagnoseEmailConfiguration } from "@/lib/email";
 import { updateVoucherStatus, type VoucherStatus } from "@/lib/store";
 
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
@@ -50,13 +50,12 @@ function formatMailTestError(error: unknown) {
 
 export async function testEmailAction() {
   try {
-    await withTimeout(verifyEmailConfiguration(), 8000);
+    const result = await withTimeout(diagnoseEmailConfiguration(), 12000);
+    redirect(`/admin?mailtest=ok&mailmsg=${encodeURIComponent(result)}`);
   } catch (error) {
     console.error("SMTP-Test fehlgeschlagen:", error);
     redirect(`/admin?mailtest=fehler&mailmsg=${encodeURIComponent(formatMailTestError(error))}`);
   }
-
-  redirect("/admin?mailtest=ok");
 }
 
 export async function updateVoucherStatusAction(formData: FormData) {
