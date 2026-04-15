@@ -49,13 +49,16 @@ function formatMailTestError(error: unknown) {
 }
 
 export async function testEmailAction() {
+  let result = "";
+
   try {
-    const result = await withTimeout(diagnoseEmailConfiguration(), 12000);
-    redirect(`/admin?mailtest=ok&mailmsg=${encodeURIComponent(result)}`);
+    result = await withTimeout(diagnoseEmailConfiguration(), 12000);
   } catch (error) {
     console.error("SMTP-Test fehlgeschlagen:", error);
     redirect(`/admin?mailtest=fehler&mailmsg=${encodeURIComponent(formatMailTestError(error))}`);
   }
+
+  redirect(`/admin?mailtest=ok&mailmsg=${encodeURIComponent(result)}`);
 }
 
 export async function updateVoucherStatusAction(formData: FormData) {
