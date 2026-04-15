@@ -28,7 +28,7 @@ export async function createBookingAction(formData: FormData) {
   revalidatePath("/buchen");
 
   try {
-    await withTimeout(sendBookingEmails(booking), 15000);
+    await withTimeout(sendBookingEmails(booking), 8000);
   } catch (error) {
     console.error("Mailversand fehlgeschlagen:", error);
     redirect("/danke?mail=fehler");

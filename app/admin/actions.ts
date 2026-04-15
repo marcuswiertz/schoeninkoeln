@@ -7,6 +7,15 @@ import { ADMIN_COOKIE, getAdminPassword } from "@/lib/auth";
 import { verifyEmailConfiguration } from "@/lib/email";
 import { updateVoucherStatus, type VoucherStatus } from "@/lib/store";
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
+  return await Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Der Mailserver antwortet gerade nicht rechtzeitig.")), timeoutMs)
+    )
+  ]);
+}
+
 export async function loginAction(formData: FormData) {
   const password = String(formData.get("password") || "");
 
@@ -41,7 +50,7 @@ function formatMailTestError(error: unknown) {
 
 export async function testEmailAction() {
   try {
-    await verifyEmailConfiguration();
+    await withTimeout(verifyEmailConfiguration(), 8000);
   } catch (error) {
     console.error("SMTP-Test fehlgeschlagen:", error);
     redirect(`/admin?mailtest=fehler&mailmsg=${encodeURIComponent(formatMailTestError(error))}`);

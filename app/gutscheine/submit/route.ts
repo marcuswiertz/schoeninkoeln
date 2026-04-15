@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     revalidatePath("/gutscheine");
 
     try {
-      await withTimeout(sendVoucherEmails(voucher, pdfBytes), 15000);
+      await withTimeout(sendVoucherEmails(voucher, pdfBytes), 8000);
     } catch (error) {
       console.error("Gutschein-Mailversand fehlgeschlagen:", error);
       return NextResponse.redirect(createPublicUrl(request, "/gutscheine/danke?mail=fehler"), 303);

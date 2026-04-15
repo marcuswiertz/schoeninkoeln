@@ -1,6 +1,9 @@
 import nodemailer from "nodemailer";
 import type { StoredBooking, VoucherOrder } from "@/lib/store";
 
+const MAIL_CONNECTION_TIMEOUT_MS = 5000;
+const MAIL_SOCKET_TIMEOUT_MS = 8000;
+
 function getRequiredEnv(name: string) {
   const value = process.env[name];
   if (!value) {
@@ -47,9 +50,9 @@ function createTransport() {
       pass
     },
     requireTLS: port !== 465,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000
+    connectionTimeout: MAIL_CONNECTION_TIMEOUT_MS,
+    greetingTimeout: MAIL_CONNECTION_TIMEOUT_MS,
+    socketTimeout: MAIL_SOCKET_TIMEOUT_MS
   });
 }
 
