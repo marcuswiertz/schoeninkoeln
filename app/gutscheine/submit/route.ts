@@ -13,6 +13,33 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
   ]);
 }
 
+function createPublicUrl(request: Request, path: string) {
+  const configuredUrl = process.env.PUBLIC_APP_URL?.trim();
+  const originHeader = request.headers.get("origin");
+  const forwardedProto = request.headers.get("x-forwarded-proto");
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const hostHeader = request.headers.get("host");
+
+  if (configuredUrl) {
+    return new URL(path, configuredUrl);
+  }
+
+  if (originHeader) {
+    return new URL(path, originHeader);
+  }
+
+  if (forwardedProto && forwardedHost) {
+    return new URL(path, `${forwardedProto}://${forwardedHost}`);
+  }
+
+  if (hostHeader) {
+    const protocol = hostHeader.includes("localhost") ? "http" : "https";
+    return new URL(path, `${protocol}://${hostHeader}`);
+  }
+
+  return new URL(path, request.url);
+}
+
 export async function POST(request: Request) {
   const formData = await request.formData();
 
@@ -37,13 +64,13 @@ export async function POST(request: Request) {
       await withTimeout(sendVoucherEmails(voucher, pdfBytes), 15000);
     } catch (error) {
       console.error("Gutschein-Mailversand fehlgeschlagen:", error);
-      return NextResponse.redirect(new URL("/gutscheine/danke?mail=fehler", request.url), 303);
+      return NextResponse.redirect(createPublicUrl(request, "/gutscheine/danke?mail=fehler"), 303);
     }
 
-    return NextResponse.redirect(new URL("/gutscheine/danke", request.url), 303);
+    return NextResponse.redirect(createPublicUrl(request, "/gutscheine/danke"), 303);
   } catch (error) {
     const params = new URLSearchParams();
     params.set("fehler", error instanceof Error ? error.message : "Die Gutscheinbestellung konnte nicht gespeichert werden.");
-    return NextResponse.redirect(new URL(`/gutscheine?${params.toString()}`, request.url), 303);
+    return NextResponse.redirect(createPublicUrl(request, `/gutscheine?${params.toString()}`), 303);
   }
 }
