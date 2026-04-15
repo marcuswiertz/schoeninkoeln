@@ -1,10 +1,5 @@
-import net from "node:net";
-import tls from "node:tls";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import type { StoredBooking, VoucherOrder } from "@/lib/store";
-
-const MAIL_CONNECTION_TIMEOUT_MS = 5000;
-const MAIL_SOCKET_TIMEOUT_MS = 8000;
 
 function getRequiredEnv(name: string) {
   const value = process.env[name];
@@ -16,6 +11,10 @@ function getRequiredEnv(name: string) {
 
 function getOptionalEnv(name: string, fallback: string) {
   return process.env[name] || fallback;
+}
+
+function getResendClient() {
+  return new Resend(getRequiredEnv("RESEND_API_KEY"));
 }
 
 function formatBookingDate(date: string, startZeit: string, endZeit: string) {
@@ -35,138 +34,6 @@ function formatVoucherDate(isoDate: string) {
     month: "2-digit",
     year: "numeric"
   }).format(new Date(isoDate));
-}
-
-function createTransport() {
-  const host = getRequiredEnv("SMTP_HOST");
-  const port = Number(process.env.SMTP_PORT || "587");
-  const user = getRequiredEnv("SMTP_USER");
-  const pass = getRequiredEnv("SMTP_PASS");
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: {
-      user,
-      pass
-    },
-    requireTLS: port !== 465,
-    connectionTimeout: MAIL_CONNECTION_TIMEOUT_MS,
-    greetingTimeout: MAIL_CONNECTION_TIMEOUT_MS,
-    socketTimeout: MAIL_SOCKET_TIMEOUT_MS
-  });
-}
-
-function formatError(error: unknown) {
-  if (error instanceof Error) {
-    const details = [error.message];
-    const code = (error as Error & { code?: string }).code;
-    const response = (error as Error & { response?: string }).response;
-
-    if (code) {
-      details.push(`Code: ${code}`);
-    }
-
-    if (response) {
-      details.push(`Antwort: ${response}`);
-    }
-
-    return details.join(" | ");
-  }
-
-  return "Unbekannter Fehler";
-}
-
-async function testTcpConnection(host: string, port: number) {
-  await new Promise<void>((resolve, reject) => {
-    const socket = net.connect({ host, port });
-
-    const cleanup = () => {
-      socket.removeAllListeners();
-      socket.destroy();
-    };
-
-    socket.setTimeout(MAIL_CONNECTION_TIMEOUT_MS);
-
-    socket.once("connect", () => {
-      cleanup();
-      resolve();
-    });
-
-    socket.once("timeout", () => {
-      cleanup();
-      reject(new Error(`Keine TCP-Verbindung zu ${host}:${port} innerhalb von ${MAIL_CONNECTION_TIMEOUT_MS} ms.`));
-    });
-
-    socket.once("error", (error) => {
-      cleanup();
-      reject(error);
-    });
-  });
-}
-
-async function testTlsHandshake(host: string, port: number) {
-  await new Promise<void>((resolve, reject) => {
-    const socket = tls.connect({
-      host,
-      port,
-      servername: host,
-      timeout: MAIL_CONNECTION_TIMEOUT_MS
-    });
-
-    const cleanup = () => {
-      socket.removeAllListeners();
-      socket.destroy();
-    };
-
-    socket.once("secureConnect", () => {
-      cleanup();
-      resolve();
-    });
-
-    socket.once("timeout", () => {
-      cleanup();
-      reject(new Error(`TLS-Handshake zu ${host}:${port} hat nicht rechtzeitig geantwortet.`));
-    });
-
-    socket.once("error", (error) => {
-      cleanup();
-      reject(error);
-    });
-  });
-}
-
-export async function diagnoseEmailConfiguration() {
-  const host = getRequiredEnv("SMTP_HOST");
-  const port = Number(process.env.SMTP_PORT || "587");
-
-  const steps: string[] = [];
-
-  try {
-    await testTcpConnection(host, port);
-    steps.push(`TCP-Verbindung zu ${host}:${port} erfolgreich.`);
-  } catch (error) {
-    throw new Error(`Die Server-Verbindung scheitert bereits vor SMTP. ${formatError(error)}`);
-  }
-
-  if (port === 465) {
-    try {
-      await testTlsHandshake(host, port);
-      steps.push("TLS-Handshake erfolgreich.");
-    } catch (error) {
-      throw new Error(`Die Verbindung zum Mailserver steht, aber TLS scheitert. ${formatError(error)}`);
-    }
-  }
-
-  try {
-    await createTransport().verify();
-    steps.push("SMTP-Anmeldung erfolgreich.");
-  } catch (error) {
-    throw new Error(`Die Server-Verbindung steht, aber SMTP/Anmeldung scheitert. ${formatError(error)}`);
-  }
-
-  return steps.join(" ");
 }
 
 function escapeHtml(value: string) {
@@ -270,21 +137,61 @@ function getBankDetails() {
   };
 }
 
-export async function verifyEmailConfiguration() {
-  const transporter = createTransport();
-  await transporter.verify();
+async function sendEmail(options: {
+  to: string;
+  subject: string;
+  text: string;
+  html: string;
+  attachments?: Array<{
+    filename: string;
+    content: Buffer;
+    contentType: string;
+  }>;
+}) {
+  const resend = getResendClient();
+  const from = getRequiredEnv("RESEND_FROM_EMAIL");
+
+  const result = await resend.emails.send({
+    from,
+    to: options.to,
+    subject: options.subject,
+    text: options.text,
+    html: options.html,
+    attachments: options.attachments?.map((attachment) => ({
+      filename: attachment.filename,
+      content: attachment.content.toString("base64"),
+      contentType: attachment.contentType
+    }))
+  });
+
+  if (result.error) {
+    throw new Error(`Resend-Fehler: ${result.error.message}`);
+  }
+}
+
+export async function diagnoseEmailConfiguration() {
+  getRequiredEnv("RESEND_API_KEY");
+  const from = getRequiredEnv("RESEND_FROM_EMAIL");
+  const studioRecipient = getRequiredEnv("MAIL_TO_STUDIO");
+
+  if (!from.includes("@")) {
+    throw new Error("Die Absenderadresse RESEND_FROM_EMAIL ist ungültig.");
+  }
+
+  if (!studioRecipient.includes("@")) {
+    throw new Error("Die Studio-E-Mail-Adresse MAIL_TO_STUDIO ist ungültig.");
+  }
+
+  return `Resend ist konfiguriert. Versand über ${from} an ${studioRecipient} ist bereit.`;
 }
 
 export async function sendBookingEmails(booking: StoredBooking) {
-  const transporter = createTransport();
-  const from = getRequiredEnv("MAIL_FROM");
   const studioRecipient = getRequiredEnv("MAIL_TO_STUDIO");
   const when = formatBookingDate(booking.date, booking.startZeit, booking.endZeit);
   const telefon = booking.telefon || "nicht angegeben";
   const notiz = booking.notiz || "kein Hinweis";
 
-  await transporter.sendMail({
-    from,
+  await sendEmail({
     to: studioRecipient,
     subject: `Neue Buchung: ${booking.kundin}`,
     text: [
@@ -312,8 +219,7 @@ export async function sendBookingEmails(booking: StoredBooking) {
     )
   });
 
-  await transporter.sendMail({
-    from,
+  await sendEmail({
     to: booking.email,
     subject: "Ihre Buchung bei Kosmetik Schön in Köln",
     text: [
@@ -344,8 +250,6 @@ export async function sendBookingEmails(booking: StoredBooking) {
 }
 
 export async function sendVoucherEmails(order: VoucherOrder, pdfBytes: Uint8Array) {
-  const transporter = createTransport();
-  const from = getRequiredEnv("MAIL_FROM");
   const studioRecipient = getRequiredEnv("MAIL_TO_STUDIO");
   const bank = getBankDetails();
   const voucherLabel =
@@ -359,8 +263,7 @@ export async function sendVoucherEmails(order: VoucherOrder, pdfBytes: Uint8Arra
     contentType: "application/pdf"
   };
 
-  await transporter.sendMail({
-    from,
+  await sendEmail({
     to: studioRecipient,
     subject: `Neue Gutscheinbestellung: ${order.beschenktePerson}`,
     text: [
@@ -391,8 +294,7 @@ export async function sendVoucherEmails(order: VoucherOrder, pdfBytes: Uint8Arra
     attachments: [attachment]
   });
 
-  await transporter.sendMail({
-    from,
+  await sendEmail({
     to: order.bestellerEmail,
     subject: "Ihr Gutschein von Kosmetik Schön in Köln",
     text: [
@@ -428,7 +330,7 @@ export async function sendVoucherEmails(order: VoucherOrder, pdfBytes: Uint8Arra
         { label: "Kontoinhaber", value: bank.accountHolder },
         { label: "Bank", value: bank.bank },
         { label: "IBAN", value: bank.iban },
-        ...(bank.bic ? [{ label: "BIC", value: bank.bic }] : [])
+        ...(bank.bic ? [{ label: "BIC", value: bank.bic }] : []),
       ],
       "Der Gutschein ist als PDF beigefügt und wird nach Zahlungseingang gültig.\n\nBitte geben Sie bei der Überweisung die Gutschein-Nummer an.\n\nHerzliche Grüße,\nSilke Wiertz"
     ),

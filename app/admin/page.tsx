@@ -37,12 +37,13 @@ export default async function AdminPage({ searchParams }: Props) {
         </div>
         {mailTestOk ? (
           <p className="status-hinweis">
-            {mailTestMessage || "Die Anmeldung am Mailserver hat funktioniert."}
+            {mailTestMessage || "Resend ist korrekt eingerichtet."}
           </p>
         ) : null}
         {mailTestFehler ? (
           <p className="status-hinweis status-hinweis-warnung">
-            Der Mailserver hat die Anmeldung abgelehnt: {mailTestMessage || "Bitte SMTP-Daten erneut prüfen."}
+            Der Mailversand ist aktuell noch nicht korrekt eingerichtet:{" "}
+            {mailTestMessage || "Bitte Resend-Konfiguration prüfen."}
           </p>
         ) : null}
       </section>
