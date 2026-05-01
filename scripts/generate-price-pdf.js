@@ -1,25 +1,17 @@
-import Link from "next/link";
+const fs = require("fs");
+const path = require("path");
+const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 
-type PriceItem = {
-  name: string;
-  price: string;
-  description: string;
-  note?: string;
-  slug?: string;
-};
-
-const priceGroups: { title: string; items: PriceItem[] }[] = [
+const priceGroups = [
   {
     title: "",
     items: [
       {
-        slug: "neukundenbehandlung",
         name: "Neukundenbehandlung",
         price: "69,- EUR",
         description: "Anamnese, Reinigung, Peeling, Ausreinigung, Maske, Kurzmassage."
       },
       {
-        slug: "pflegeberatung-von-lupin",
         name: "Pflegeberatung VON LUPIN",
         price: "69,- EUR",
         description:
@@ -32,28 +24,24 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
     title: "Basis-Behandlungen",
     items: [
       {
-        slug: "pur",
         name: "Pur",
         price: "59,- EUR",
         description:
           "Reinigende Gesichtsbehandlung mit Hautdiagnose, Reinigung, Peeling, Vapozon, Ausreinigung, Wirkstoffmaske und Abschlusspflege."
       },
       {
-        slug: "pur-clean",
         name: "Pur Clean",
         price: "68,- EUR",
         description:
           "Intensive reinigende Gesichtsbehandlung mit Hautdiagnose, Reinigung, Peeling, Vapozon, Tiefenreinigung, Wirkstoffmaske und Abschlusspflege."
       },
       {
-        slug: "entspannung",
         name: "Entspannung",
         price: "79,- EUR",
         description:
           "Komplette Gesichtsbehandlung mit Hautdiagnose, Reinigung, Peeling, Vapozon, Ausreinigung, Massage, Augenbrauenkorrektur, Wirkstoffmaske, Abschlusspflege und Tages-Make-up."
       },
       {
-        slug: "anti-stress-fuer-den-mann",
         name: "Anti-Stress fuer den Mann",
         price: "68,- EUR",
         description:
@@ -65,14 +53,12 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
     title: "Cosmeceutical-Behandlungen",
     items: [
       {
-        slug: "professional-oxygen-peel",
         name: "Professional Oxygen Peel",
         price: "ab 95,- EUR",
         description:
           "Reinigende 3-Phasen Oxygen Care Peel inklusive Massage, Ausreinigung, Maske, Ampulle und Abschlusspflege."
       },
       {
-        slug: "pumpkin-enzyme-peel",
         name: "Pumpkin Enzyme Peel",
         price: "ab 95,- EUR",
         description:
@@ -84,7 +70,6 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
     title: "Kur-Behandlungen",
     items: [
       {
-        slug: "fruchtsaeure-peel",
         name: "Fruchtsaeure Peel",
         price: "79,- EUR",
         description:
@@ -96,7 +81,6 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
         description: "Kurangebot auf Basis der Fruchtsaeure Peel Behandlung."
       },
       {
-        slug: "fruchtsaeure-peel-special",
         name: "Fruchtsaeure Peel Special",
         price: "86,- EUR",
         description: "Fruchtsaeure Peel + Enzyme Peel Mask."
@@ -118,7 +102,6 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
         note: "Nur in Verbindung mit einer Gesichtsbehandlung."
       },
       {
-        slug: "rueckenbehandlung",
         name: "Rueckenbehandlung",
         price: "55,- EUR",
         description:
@@ -169,42 +152,196 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
   }
 ];
 
-export default function PreisePage() {
-  return (
-    <main className="section">
-      <section className="section-banner">
-        <div className="eyebrow">Preise</div>
-        <h1 className="section-title" style={{ fontSize: "2.8rem" }}>
-          Preisuebersicht
-        </h1>
-        <p className="section-copy">
-          Bei Rueckfragen zu einer Behandlung oder zur passenden Pflege berate ich Sie gerne persoenlich.
-        </p>
-      </section>
+const PAGE = { width: 595.28, height: 841.89, margin: 48 };
+const COLORS = {
+  ink: rgb(0.18, 0.12, 0.12),
+  muted: rgb(0.38, 0.34, 0.34),
+  accent: rgb(0.74, 0.22, 0.24),
+  line: rgb(0.9, 0.85, 0.82)
+};
 
-      {priceGroups.map((group) => (
-        <section className="section-stack" key={`${group.title}-${group.items[0]?.name ?? "group"}`}>
-          {group.title ? <h2 className="section-subtitle">{group.title}</h2> : null}
-          <section className="price-list">
-            {group.items.map((item) => (
-              <article className="price-row" id={item.slug} key={`${group.title}-${item.name}`}>
-                <div>
-                  <h3>{item.name}</h3>
-                  <p className="muted">{item.description}</p>
-                  {item.note ? <p className="muted">{item.note}</p> : null}
-                </div>
-                <div className="price-value">{item.price}</div>
-              </article>
-            ))}
-          </section>
-        </section>
-      ))}
+function wrapText(text, font, size, maxWidth) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = "";
 
-      <p className="section-copy payment-note">Zahlung per Paypal, Ueberweisung oder Bar.</p>
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    const width = font.widthOfTextAtSize(candidate, size);
+    if (width <= maxWidth || !current) {
+      current = candidate;
+    } else {
+      lines.push(current);
+      current = word;
+    }
+  }
 
-      <Link className="floating-book-button" href="/buchen">
-        Hier buchen
-      </Link>
-    </main>
-  );
+  if (current) lines.push(current);
+  return lines;
 }
+
+async function generate() {
+  const pdf = await PDFDocument.create();
+  const regular = await pdf.embedFont(StandardFonts.Helvetica);
+  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+
+  let page = pdf.addPage([PAGE.width, PAGE.height]);
+  let y = PAGE.height - PAGE.margin;
+
+  const addPage = () => {
+    page = pdf.addPage([PAGE.width, PAGE.height]);
+    y = PAGE.height - PAGE.margin;
+  };
+
+  const ensureSpace = (needed) => {
+    if (y - needed < PAGE.margin) addPage();
+  };
+
+  const drawLine = () => {
+    page.drawLine({
+      start: { x: PAGE.margin, y },
+      end: { x: PAGE.width - PAGE.margin, y },
+      thickness: 1,
+      color: COLORS.line
+    });
+    y -= 14;
+  };
+
+  page.drawText("Schoen in Koeln", {
+    x: PAGE.margin,
+    y,
+    size: 24,
+    font: bold,
+    color: COLORS.ink
+  });
+  y -= 26;
+
+  page.drawText("Kosmetik Silke Wiertz", {
+    x: PAGE.margin,
+    y,
+    size: 11,
+    font: regular,
+    color: COLORS.accent
+  });
+  y -= 26;
+
+  page.drawText("Preisuebersicht", {
+    x: PAGE.margin,
+    y,
+    size: 20,
+    font: bold,
+    color: COLORS.ink
+  });
+  y -= 22;
+
+  const intro =
+    "Aktuelle Behandlungen und Preise von Schoen in Koeln. Bei Rueckfragen zu einer Behandlung oder zur passenden Pflege beraten wir gerne persoenlich.";
+  for (const line of wrapText(intro, regular, 10.5, PAGE.width - PAGE.margin * 2)) {
+    page.drawText(line, {
+      x: PAGE.margin,
+      y,
+      size: 10.5,
+      font: regular,
+      color: COLORS.muted
+    });
+    y -= 14;
+  }
+
+  y -= 8;
+  drawLine();
+
+  for (const group of priceGroups) {
+    ensureSpace(44);
+
+    if (group.title) {
+      page.drawText(group.title, {
+        x: PAGE.margin,
+        y,
+        size: 13,
+        font: bold,
+        color: COLORS.accent
+      });
+      y -= 18;
+    }
+
+    for (const item of group.items) {
+      const descLines = wrapText(item.description, regular, 9.5, 330);
+      const noteLines = item.note ? wrapText(item.note, regular, 9.5, 330) : [];
+      const blockHeight = 18 + descLines.length * 12 + noteLines.length * 12 + 10;
+      ensureSpace(blockHeight);
+
+      page.drawText(item.name, {
+        x: PAGE.margin,
+        y,
+        size: 10.5,
+        font: bold,
+        color: COLORS.ink
+      });
+      page.drawText(item.price, {
+        x: PAGE.width - PAGE.margin - bold.widthOfTextAtSize(item.price, 10.5),
+        y,
+        size: 10.5,
+        font: bold,
+        color: COLORS.ink
+      });
+      y -= 14;
+
+      for (const line of descLines) {
+        page.drawText(line, {
+          x: PAGE.margin,
+          y,
+          size: 9.5,
+          font: regular,
+          color: COLORS.muted
+        });
+        y -= 12;
+      }
+
+      for (const line of noteLines) {
+        page.drawText(line, {
+          x: PAGE.margin,
+          y,
+          size: 9.5,
+          font: regular,
+          color: COLORS.muted
+        });
+        y -= 12;
+      }
+
+      y -= 8;
+    }
+
+    y -= 2;
+  }
+
+  ensureSpace(56);
+  drawLine();
+
+  const footerLines = [
+    "Zahlung per Paypal, Ueberweisung oder Bar.",
+    "Terminvereinbarung und Rueckfragen: info@schoeninkoeln.de | 0172 / 8903667"
+  ];
+
+  for (const line of footerLines) {
+    page.drawText(line, {
+      x: PAGE.margin,
+      y,
+      size: 9.5,
+      font: regular,
+      color: COLORS.muted
+    });
+    y -= 12;
+  }
+
+  const outputDir = path.join(__dirname, "..", "exports");
+  fs.mkdirSync(outputDir, { recursive: true });
+  const outputPath = path.join(outputDir, "schoeninkoeln-preisuebersicht.pdf");
+  const bytes = await pdf.save();
+  fs.writeFileSync(outputPath, bytes);
+  console.log(outputPath);
+}
+
+generate().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
