@@ -61,7 +61,7 @@ export default function BehandlungenPage() {
       </div>
 
       <p className="section-copy" style={{ marginTop: "10px" }}>
-        Alle weiteren Behandlungen finden Sie auf der Preiseseite.
+        Alle weiteren Behandlungen finden Sie auf der Preisseite.
       </p>
 
       <div className="inline-actions">

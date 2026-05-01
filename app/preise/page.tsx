@@ -23,7 +23,7 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
         name: "Pflegeberatung VON LUPIN",
         price: "69,- EUR",
         description:
-          "Anamnese und Hautanalyse, Hautreinigung mit Cleanser und biologisches Peeling, Tiefenpflege, Maske-Intensivpflege und Abschlusspflege mit persoenlicher Pflegeberatung.",
+          "Anamnese und Hautanalyse, Hautreinigung mit Cleanser und biologisches Peeling, Tiefenpflege, Maske-Intensivpflege und Abschlusspflege mit persönlicher Pflegeberatung.",
         note: "Ohne Ausreinigung, ohne Massage."
       }
     ]
@@ -54,7 +54,7 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
       },
       {
         slug: "anti-stress-fuer-den-mann",
-        name: "Anti-Stress fuer den Mann",
+        name: "Anti-Stress für den Mann",
         price: "68,- EUR",
         description:
           "Komplette Gesichtsbehandlung mit Hautdiagnose, Reinigung, Peeling, Vapozon, Ausreinigung, Gesichtsmassage, Wirkstoffmaske und Abschlusspflege."
@@ -85,26 +85,26 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
     items: [
       {
         slug: "fruchtsaeure-peel",
-        name: "Fruchtsaeure Peel",
+        name: "Fruchtsäure Peel",
         price: "79,- EUR",
         description:
           "Reinigung, Peeling-Maske unter Dampf, Glycolic Polymer Solution, Tiefenreinigung, typgerechte Maske und Abschlusspflege."
       },
       {
-        name: "5-er Kur Fruchtsaeure Peel",
+        name: "5-er Kur Fruchtsäure Peel",
         price: "355,- EUR",
-        description: "Kurangebot auf Basis der Fruchtsaeure Peel Behandlung."
+        description: "Kurangebot auf Basis der Fruchtsäure Peel Behandlung."
       },
       {
         slug: "fruchtsaeure-peel-special",
-        name: "Fruchtsaeure Peel Special",
+        name: "Fruchtsäure Peel Special",
         price: "86,- EUR",
-        description: "Fruchtsaeure Peel + Enzyme Peel Mask."
+        description: "Fruchtsäure Peel + Enzyme Peel Mask."
       },
       {
-        name: "5-er Kur Fruchtsaeure Peel Special",
+        name: "5-er Kur Fruchtsäure Peel Special",
         price: "385,- EUR",
-        description: "Kurangebot auf Basis der Fruchtsaeure Peel Special Behandlung."
+        description: "Kurangebot auf Basis der Fruchtsäure Peel Special Behandlung."
       }
     ]
   },
@@ -112,22 +112,22 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
     title: "Zusatz- und Einzelbehandlungen",
     items: [
       {
-        name: "Hals- und Dekollete Behandlung",
-        price: "28,- bis 30,- EUR",
+        name: "Hals- und Dekolleté Behandlung",
+        price: "28,- EUR",
         description: "Peeling, Wirkstoffampulle und -maske, Abschlusspflege.",
         note: "Nur in Verbindung mit einer Gesichtsbehandlung."
       },
       {
         slug: "rueckenbehandlung",
-        name: "Rueckenbehandlung",
+        name: "Rückenbehandlung",
         price: "55,- EUR",
         description:
-          "Hautdiagnose, Peeling, Ausreinigung, Kurzmassage oder Wirkstoffpackung, Koerperpflege."
+          "Hautdiagnose, Peeling, Ausreinigung, Kurzmassage oder Wirkstoffpackung, Körperpflege."
       },
       {
-        name: "Manikuere",
+        name: "Maniküre",
         price: "35,- EUR",
-        description: "Klassische Manikuere fuer gepflegte Haende.",
+        description: "Klassische Maniküre für gepflegte Hände.",
         note: "Inklusive Nagellack 42,- EUR."
       }
     ]
@@ -136,7 +136,7 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
     title: "Depilation",
     items: [
       {
-        name: "Koerper",
+        name: "Körper",
         price: "ab 28,- EUR",
         description: "Haarentfernung mit Warmwachs."
       },
@@ -148,20 +148,20 @@ const priceGroups: { title: string; items: PriceItem[] }[] = [
     ]
   },
   {
-    title: "Faerben",
+    title: "Färben",
     items: [
       {
-        name: "Wimpern & Augenbrauen faerben",
+        name: "Wimpern & Augenbrauen färben",
         price: "22,- EUR / 30,- EUR",
         description: "22,- EUR im Rahmen einer Behandlung, 30,- EUR ohne Behandlung."
       },
       {
-        name: "Wimpern faerben",
+        name: "Wimpern färben",
         price: "15,- EUR / 20,- EUR",
         description: "15,- EUR im Rahmen einer Behandlung, 20,- EUR ohne Behandlung."
       },
       {
-        name: "Augenbrauen zupfen und faerben",
+        name: "Augenbrauen zupfen und färben",
         price: "10,- EUR / 15,- EUR",
         description: "10,- EUR im Rahmen einer Behandlung, 15,- EUR ohne Behandlung."
       }
@@ -175,10 +175,10 @@ export default function PreisePage() {
       <section className="section-banner">
         <div className="eyebrow">Preise</div>
         <h1 className="section-title" style={{ fontSize: "2.8rem" }}>
-          Preisuebersicht
+          Preisübersicht
         </h1>
         <p className="section-copy">
-          Bei Rueckfragen zu einer Behandlung oder zur passenden Pflege berate ich Sie gerne persoenlich.
+          Bei Rückfragen zu einer Behandlung oder zur passenden Pflege berate ich Sie gerne persönlich.
         </p>
       </section>
 
@@ -200,7 +200,7 @@ export default function PreisePage() {
         </section>
       ))}
 
-      <p className="section-copy payment-note">Zahlung per Paypal, Ueberweisung oder Bar.</p>
+      <p className="section-copy payment-note">Zahlung per Paypal, Überweisung oder Bar.</p>
 
       <Link className="floating-book-button" href="/buchen">
         Hier buchen
