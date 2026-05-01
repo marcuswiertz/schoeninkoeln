@@ -97,7 +97,7 @@ const priceGroups = [
     items: [
       {
         name: "Hals- und Dekollet\u00e9 Behandlung",
-        price: "28,- bis 30,- EUR",
+        price: "28,- EUR",
         description: "Peeling, Wirkstoffampulle und -maske, Abschlusspflege.",
         note: "Nur in Verbindung mit einer Gesichtsbehandlung."
       },
@@ -244,7 +244,7 @@ async function generate() {
   y -= 18;
 
   const intro =
-    "Aktuelle Behandlungen und Preise von Sch\u00f6n in K\u00f6ln. Bei R\u00fcckfragen zu einer Behandlung oder zur passenden Pflege beraten wir gerne pers\u00f6nlich.";
+    "Aktuelle Behandlungen und Preise von Sch\u00f6n in K\u00f6ln. Bei R\u00fcckfragen zu einer Behandlung oder zur passenden Pflege berate ich Sie gerne pers\u00f6nlich.";
   for (const line of wrapText(intro, regular, 10.5, PAGE.width - PAGE.margin * 2)) {
     page.drawText(line, {
       x: PAGE.margin,
@@ -279,13 +279,41 @@ async function generate() {
       const blockHeight = 18 + descLines.length * 12 + noteLines.length * 12 + 10;
       ensureSpace(blockHeight);
 
-      page.drawText(item.name, {
-        x: PAGE.margin,
-        y,
-        size: 10.5,
-        font: bold,
-        color: COLORS.ink
-      });
+      if (item.name === "Neukundenbehandlung") {
+        page.drawText(item.name, {
+          x: PAGE.margin,
+          y,
+          size: 10.5,
+          font: bold,
+          color: COLORS.accent
+        });
+      } else if (item.name === "Pflegeberatung VON LUPIN") {
+        const firstPart = "Pflegeberatung";
+        const secondPart = " VON LUPIN";
+        page.drawText(firstPart, {
+          x: PAGE.margin,
+          y,
+          size: 10.5,
+          font: bold,
+          color: COLORS.accent
+        });
+        page.drawText(secondPart, {
+          x: PAGE.margin + bold.widthOfTextAtSize(firstPart, 10.5),
+          y,
+          size: 10.5,
+          font: bold,
+          color: COLORS.ink
+        });
+      } else {
+        page.drawText(item.name, {
+          x: PAGE.margin,
+          y,
+          size: 10.5,
+          font: bold,
+          color: COLORS.ink
+        });
+      }
+
       page.drawText(item.price, {
         x: PAGE.width - PAGE.margin - bold.widthOfTextAtSize(item.price, 10.5),
         y,
